@@ -57,9 +57,12 @@ Flexible needle abstract
 \section{INTRODUCTION}
 
 Minimally invasive techniques are replacing open surgery for procedures such as biopsies.
-In some procedures, a flexible needle is inserted under image guidance toward a target, either manually or using robotic actuators. In both cases visual feedback of the needle position within the tissue is required. CT guidance can offer a 3D view of the needle insertion procedure at the expense of a large dose to the patient since multiple scans are required as the needle is gradually inserted. furthermore, image artifacts are caused by the metallic needle during reconstruction, making it difficult to localize the tip of the needle with respect to the surrounding tissue.
-
-
+In some procedures, a flexible needle is inserted under image guidance toward a target, either manually or using robotic actuators. 
+In both cases visual feedback of the needle position within the tissue is required. 
+Ultrasound imaging has been used to allow visual feedback, however it only offers a 2D cross section of the tissue.
+CT guidance offers a 3D view of the needle insertion procedure at the expense of a large X-Ray dose to the patient since multiple scans are required as the needle is gradually inserted. Furthermore, image artifacts in CT are caused by the metallic needle during reconstruction, making it difficult to localize the tip of the needle with respect to the surrounding tissue. 
+Dose reduction techniques focus on achieving a good quality of reconstruction using lower dose. However, in the common cases where a full baseline scan (without the needle) is available, reconstruction-free fractional scanning can be used. Fractional scanning refers to acquiring projection data from a sparse set of views, which is not large enough to allow reconstruction but enables registration with the baseline scan and localization of the needle in the repeat scan.
+Visual feedback is particularly important for robotic driven needles, where the interaction of the needle and tissue is modeled in order to construct a control sequence realizing a planned insertion path. Such systems would benefit from mid-insertion feedback that would allow adjustments to the control sequence based on the achieved state of the needle insertion.
 
 \section{PREVIOUS WORK}
 
