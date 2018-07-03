@@ -67,6 +67,8 @@ Visual feedback is particularly important for robotic driven needles, where the 
 \section{PREVIOUS WORK}
 
 \cite{wu2013automatic} \cite{engh2010percutaneous} describe implementations of a bevel-tip needle steering method using duty-cycle spinning of the needle, relying on its bending tendency due to asymmetry. Such systems model the needle-tissue interaction to execute a control sequence achieving a pre-planned trajectory. Imaging-based feedback is mentioned as a means to allow corrections of the control sequence mid-insertion by adjusting the planned trajectory based on the actual needle trajectory.
+\cite{ben2018robotic} describe a robotic system for flexible needle insertion under CT guidance. A dual guiding mechanism is composed of a driver which advances the needle while a positioning unit steers it during insertion. A pre-planned trajectory is executed and amended during the insertion based on full repeated CT scans.
+Earlier work \cite{glozman2007image} describes robotic flexible needle steering and a needle-tissue mechanical interaction model, where feedback is based on imaging of the needle.
 
 Some works have proposed tracking needle trajectory in ultrasound imaging.
 
@@ -118,23 +120,46 @@ The incremental process is stopped once the length of the 3D curve $C_{i+1}$ exc
 
 \section{RESULTS}
 
-\section{CONCLUSION}
+To demonstrate our method we conducted an experiment consisting of flexible needles inserted into an abdomen phantom (CIRS model 57) and scanned using GE Discovery CT750HD scanner at GE Healthcare Haifa. The needles used were: a long 16 gauge (1.65mm outer diameter), and short 22 gauge (0.72mm outer diameter). For the long needle, the marker center was fixed at 235mm from the tip, and for the short needle at 135mm.
+The reconstructed image size is $ 800 \times 800 \times 144 $ voxels, with spatial resolution of $0.58 \times 0.58 \times 1.25mm^3$. The detector array consists of 885 elements scanned at 984 views at regular intervals in the range [0⁰, 360⁰], where four slices were acquired in each full revolution. The data was re-binned from fan-beam to parallel rays’ representation of the projections.
 
-\begin{table}[h]
-\caption{An Example of a Table}
-\label{table_example}
+At first a scan of the empty scanner bed was performed so that its sinogram can be subtracted from the following scans. Then, a full (dense sampling of view angles) baseline scan of the phantom was acquired, without the needle present. At each subsequent scan, the needle with attached spherical marker was inserted at a different location or different depth, and a full scan was acquired again. Sparse scanning was simulated by allowing the algorithm to access only a small subset of view angles.
+
+The full baseline scan was registered to each sparse scan with needle inserted, using Radon-space rigid registration. The registration accuracy was evaluated as the root-mean-square of differences between voxel coordinates transformed by the calculated registration and by image-space registration of the reconstructed images. 
+A sparse set of 24 evenly spaced view angles in the range $[0^\circ,180^\circ)$ was used for Radon-space registration and needle path reconstruction as previous experiments \cite{medan2017reduced} with a straight needle showed this selection offered a good trade-off between robustness and potential dose reduction.
+The marker center and needle tip ground truth was obtained via manual localization on the reconstructed images.
+Table \ref{results_table} summarizes the results of needle tip localization for the 7 scans in the dataset.
+
+\section{Discussion}
+
+\begin{table}[b]
+\caption{Summary of experimental results}
+\label{results_table}
 \begin{center}
-\begin{tabular}{|c||c|}
+\begin{tabular}{|c||c|c|c|}
 \hline
-One & Two\\
+Scan ID & Reg. error [mm] & Marker error [mm] & Tip error [mm]\\
 \hline
-Three & Four\\
+\hline
+L1 & 1.4 & 1.9 & 2.6\\
+\hline
+L2 & 0.7 & 0.8 & 1.9\\
+\hline
+L3 & 0.6 & 0.3 & --\\
+\hline
+L4 & 1.0 & 0.8 & 2.0\\
+\hline
+S1 & 1.4 & 1.1 & 2.4\\
+\hline
+S2 & 1.2 & 4.5 & --\\
+\hline
+S3 & 1.5 & 0.9 & --\\
 \hline
 \end{tabular}
 \end{center}
 \end{table}
 
-\begin{figure}[thpb]
+\begin{figure}[tpb]
 \centering
 \includegraphics[width=6cm]{./example_raw.png}
 \caption{Inductance of oscillation winding on amorphous
