@@ -31,7 +31,7 @@ Flexible needle
 \author{Guy Medan$^{1}$ and Leo Joskowicz$^{1}$% <-this % stops a space
 \thanks{Grant}% <-this % stops a space
 \thanks{$^{1}$HUJI
-        {\tt\small josko at cs.huji.ac.il}}%
+        {\tt\small gmedan/josko at cs.huji.ac.il}}%
 \thanks{Eyal, Ronen}%
 }
 
@@ -56,25 +56,29 @@ Flexible needle abstract
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{INTRODUCTION}
 
-Minimally invasive techniques are replacing open surgery for procedures such as biopsies.
-In some procedures, a flexible needle is inserted under image guidance toward a target, either manually or using robotic actuators. 
-In both cases visual feedback of the needle position within the tissue is required. 
-Ultrasound imaging has been used to allow visual feedback, however it only offers a 2D cross section of the tissue.
-CT guidance offers a 3D view of the needle insertion procedure at the expense of a large X-Ray dose to the patient since multiple scans are required as the needle is gradually inserted. Furthermore, image artifacts in CT are caused by the metallic needle during reconstruction, making it difficult to localize the tip of the needle with respect to the surrounding tissue. 
-Dose reduction techniques focus on achieving a good quality of reconstruction using lower dose. However, in the common cases where a full baseline scan (without the needle) is available, reconstruction-free fractional scanning can be used. Fractional scanning refers to acquiring projection data from a sparse set of views, which is not large enough to allow reconstruction but enables registration with the baseline scan and localization of the needle in the repeat scan.
-Visual feedback is particularly important for robotic driven needles, where the interaction of the needle and tissue is modeled in order to construct a control sequence realizing a planned insertion path. Such systems would benefit from mid-insertion feedback that would allow adjustments to the control sequence based on the achieved state of the needle insertion.
+Image guided minimally invasive techniques have become commonplace for interventional procedures such as biopsies and aspirations.
+In these procedures a flexible needle is inserted under image guidance toward a target, either manually or using robotic actuators.
+In both cases, visual feedback of the needle position within the tissue is required. 
+The two prominent image modalities used for such procedures are ultrasound imaging and CT , where sonographic methods offer a fast and cost-effective guidance, while CT offers superior imaging of the needle and target \cite{sheafor2000comparison}:
+ultrasound imaging provides a 2D cross section of the tissue, whereas CT guidance offers a 3D view of the needle insertion procedure, at the expense of a large X-Ray dose to the patient since multiple scans are required. Furthermore, image artifacts in CT are introduced by the metallic needle during reconstruction, making it difficult to localize the tip of the needle with respect to the surrounding tissue.
 
+CT-guided procedures involve incremental advancement of a needle, which is imaged repeatedly to ensure that the needle is being inserted in the desired position and orientation.
+Dose reduction techniques focus on achieving a good quality of reconstruction using lower dose. However, in the common cases where a full baseline scan (without the needle) is available, reconstruction-free fractional scanning can be used: fractional scanning refers to acquiring projection data from a sparse set of views, which is not large enough to allow reconstruction but enables registration with the baseline scan and localization of the needle in the repeat scan.
+
+Visual feedback is particularly important for robotic driven needles, where the interaction of the needle and tissue is modeled in order to construct a control sequence realizing a planned insertion path. Such systems would benefit from mid-insertion feedback that would allow adjustments to the control sequence based on the achieved state of the needle insertion, and a reduction in x-ray dose will benefit the patient who will be subjected to a smaller radiation-related risk.
+ 
 \section{PREVIOUS WORK}
-
+Different methods have been proposed to achieve accurate needle insertion by robotic actuators, with work focused on mechanical modelling of the system, environment and trajectory planning, but with little attention to needle localization from imaging modalities as feedback.
 \cite{wu2013automatic} \cite{engh2010percutaneous} describe implementations of a bevel-tip needle steering method using duty-cycle spinning of the needle, relying on its bending tendency due to asymmetry. Such systems model the needle-tissue interaction to execute a control sequence achieving a pre-planned trajectory. Imaging-based feedback is mentioned as a means to allow corrections of the control sequence mid-insertion by adjusting the planned trajectory based on the actual needle trajectory.
-\cite{ben2018robotic} describe a robotic system for flexible needle insertion under CT guidance. A dual guiding mechanism is composed of a driver which advances the needle while a positioning unit steers it during insertion. A pre-planned trajectory is executed and amended during the insertion based on full repeated CT scans.
-Earlier work \cite{glozman2007image} describes robotic flexible needle steering and a needle-tissue mechanical interaction model, where feedback is based on imaging of the needle.
+\cite{ben2018robotic} describe a robotic system for flexible needle insertion under CT guidance. A dual guiding mechanism is composed of a driver which advances the needle while a positioning unit steers it during insertion. A pre-planned 3D trajectory is executed and amended during the insertion based on full repeated CT scans.
+Earlier work \cite{glozman2007image} describes robotic flexible needle steering and a needle-tissue mechanical interaction model, where feedback is based on 2D imaging of the needle.
 
-Some works have proposed tracking needle trajectory in ultrasound imaging.
+Most works in needle localization from medical
+images use ultrasound as the imaging modality. In \cite{vrooijink2013real}, a robotically positioned 2D transducer is perpendicular to the needle tip and needle-induced image artifacts are taken advantage of in order to localize the needle tip in the imaged plane, while the transducer is continuously repositioned to maintain its orientation relative to the needle tip. An approach combining both ultrasound and CT fluoroscopy is presented in \cite{marinetto2017integration}, where a free-hand ultrasound probe and C-arm are registered using an external optical tracker to produce a fused image in which the needle can be tracked.
 
+The following works describe specific methods to localize the needle path in reconstructed CT images:
 \cite{huo2015shape} reconstruct the bevel-tip flexible needle path from full CT slices by localizing points at which the needle intersects slice planes, and fitting a four-order polynomial to the collection of 3D points.
-
-\cite{yaniv2010needle} use embedded electromagnetic fiducials for needle tracking under CT guidance, with operator input required to identify the needle tip in a full CT scan taken in-situ.
+In \cite{yaniv2010needle}, embedded electromagnetic fiducials are used for needle tracking under CT guidance, with operator input required to identify the needle tip in a full CT scan taken in-situ.
 
 \section{MATERIALS AND METHOD}
 
@@ -88,7 +92,8 @@ We describe next an extension to flexible needles of our previous method \cite{m
 \end{enumerate}
 Steps 1-5 are repeated each time the needle is further inserted during the intervention, until the tip localization shows the desired target structure inside the patient is reached. Optionally, full CT scans for image reconstruction can be acquired during the procedure as needed. Our method uses the same sparse projection sampling pattern both for registration and for needle localization, avoiding additional scanning and image reconstruction so the radiation dose is a fraction of that required in image based methods. This allows frequent needle insertion and localization for feedback and accuracy without excessive radiation dose.
 
-The rest of this section is organized as follows. 
+The rest of this section is organized as follows.
+(TBD)
 % Section A provides a short background on the imaging characteristics of metallic objects in CT scanning. Section B describes the method materials, the composition and geometry of the spherical marker. Section C describes the projection space needle and marker localization method. Sections D and E elaborate on two key technical aspects of the method: needle and sphere localization in projection space and in 3D physical space.
 
 
@@ -99,9 +104,9 @@ Similarly to our previous method \cite{medan2017reduced}, the 3D center of the s
 
 \item The 2D centers of the projected spherical marker are roughly localized in each of the $K$ projection difference images by correlating the difference projection image with a circular pattern.
 
-\item The 2D projected marker centers are reﬁned in each image by optimizing a cost function which takes into account the image gradients of the marker's surface.
+\item The 2D projected marker centers in each projection difference image are refined by optimizing a cost function which takes into account the image gradients of the marker's surface.
 
-\item The 3D position of the marker center $s$ is calculated by solving the inverse projection problem using the known projection geometry of the CT and the localized marker centers.
+\item The 3D position of the marker center $s$ is calculated by solving an inverse problem using the known projection geometry of the CT and the localized marker centers.
 
 \end{enumerate}
 
@@ -120,7 +125,7 @@ The incremental process is stopped once the length of the 3D curve $C_{i+1}$ exc
 
 \section{RESULTS}
 
-To demonstrate our method we conducted an experiment consisting of flexible needles inserted into an abdomen phantom (CIRS model 57) and scanned using GE Discovery CT750HD scanner at GE Healthcare Haifa. The needles used were: a long 16 gauge (1.65mm outer diameter), and short 22 gauge (0.72mm outer diameter). For the long needle, the marker center was fixed at 235mm from the tip, and for the short needle at 135mm.
+To demonstrate our method we conducted an experiment consisting of flexible needles inserted into an abdomen phantom (CIRS model 57) and scanned using GE Discovery CT750HD scanner at GE Healthcare Haifa. The needles used were: a long 16 gauge (1.65mm outer diameter) needle, and short 22 gauge (0.72mm outer diameter) needle. For the long needle, the marker center was fixed at 235mm from the tip, and for the short needle at 135mm.
 The reconstructed image size is $ 800 \times 800 \times 144 $ voxels, with spatial resolution of $0.58 \times 0.58 \times 1.25mm^3$. The detector array consists of 885 elements scanned at 984 views at regular intervals in the range [0⁰, 360⁰], where four slices were acquired in each full revolution. The data was re-binned from fan-beam to parallel rays’ representation of the projections.
 
 At first a scan of the empty scanner bed was performed so that its sinogram can be subtracted from the following scans. Then, a full (dense sampling of view angles) baseline scan of the phantom was acquired, without the needle present. At each subsequent scan, the needle with attached spherical marker was inserted at a different location or different depth, and a full scan was acquired again. Sparse scanning was simulated by allowing the algorithm to access only a small subset of view angles.
