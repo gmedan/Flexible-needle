@@ -25,6 +25,8 @@
 %\usepackage{amsmath} % assumes amsmath package installed
 %\usepackage{amssymb}  % assumes amsmath package installed
 \usepackage{enumitem}
+\usepackage{float}
+\usepackage{lipsum}
 
 \title{\LARGE \bf
 Reduced-dose flexible needle and patient tracking using fractional scanning in interventional CT procedures 
@@ -41,31 +43,20 @@ Reduced-dose flexible needle and patient tracking using fractional scanning in i
 \begin{document}
 
 
-
 \maketitle
-\thispagestyle{empty}
-\pagestyle{empty}
+\thispagestyle{plain}
+\pagestyle{plain}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
-Abstract Abstract Abstract Abstract Abstract Abstract
-Abstract Abstract Abstract Abstract Abstract Abstract
-Abstract Abstract Abstract Abstract Abstract Abstract
-Abstract Abstract Abstract Abstract Abstract Abstract
-Abstract Abstract Abstract Abstract Abstract Abstract
-Abstract Abstract Abstract Abstract Abstract Abstract
-Abstract Abstract Abstract Abstract Abstract Abstract
-Abstract Abstract Abstract Abstract Abstract Abstract
-Abstract Abstract Abstract Abstract Abstract Abstract
-Abstract Abstract Abstract Abstract Abstract Abstract
-Abstract Abstract Abstract Abstract Abstract Abstract
-Abstract Abstract Abstract Abstract Abstract Abstract
-Abstract Abstract Abstract Abstract Abstract Abstract
-Abstract Abstract Abstract Abstract Abstract Abstract
-Abstract Abstract Abstract Abstract Abstract Abstract.
+\lipsum[1]
 
 \end{abstract}
+
+\begin{keywords}
+interventional CT, fractional CT scanning, reduced dose CT scanning, flexible needle tracking, radon space registration 
+\end{keywords}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
@@ -108,7 +99,7 @@ In \cite{yaniv2010needle}, embedded electromagnetic fiducials are used for needl
 
 \section{Method}
 
-We describe next an extension to flexible needles of our previous method \cite{medan2017reduced} for volume image-less rigid needle and patient tracking in interventional CT procedures based on fractional CT scanning. Similarly to our previous method, we begin by computing a sinogram-space rigid registration of the patient position in the CT scanner coordinate frame between a baseline scan without a needle, and a repeat scan with a needle introduced. The repeat scan is performed by sampling sparsely in the view angle domain (fractional scanning) and without reconstructing the CT image, while the baseline scan is assumed to be a full scan (sampled densely in the view angle domain). We use projection difference images, which are calculated by subtracting registered reprojected baseline scan images from the sparse set of repeat projection images. These highlight the differences between scans, which in our case is assumed to be the needle. The needle path is then traced in 3D space using only the projection difference images. The stages of our method are outlined below:
+We describe next an extension to flexible needles of our previous method \cite{medan2017reduced} for volume image-less rigid needle and patient tracking in interventional CT procedures based on fractional CT scanning. Similarly to our previous method, we begin by computing a sinogram-space rigid registration of the patient position in the CT scanner coordinate frame between a baseline scan without a needle, and a repeat scan with a needle introduced. The repeat scan is performed by sampling sparsely in the view angle domain (fractional scanning) and without reconstructing the CT image, while the baseline scan is assumed to be a full scan (sampled densely in the view angle domain). We use projection difference images (shown in figure \ref{proj_diff_fig}), which are calculated by subtracting registered reprojected baseline scan images from the sparse set of repeat projection images. These highlight the differences between scans, which in our case is assumed to be the needle. The needle path is then traced in 3D space using only the projection difference images. The stages of our method are outlined below:
 \begin{enumerate}
 \item \textit{Fractional scanning}. A fractional repeat scan is obtained with the needle in place. The full baseline scan and fractional repeat scan are registered using our sinogram space rigid registration method \cite{medan2017sparse}.
 \item \textit{Projection difference}. Using the obtained rigid registration, the projection difference images are calculated by applying the rigid transformation to the baseline scan volume, forward projection, and subtraction.
@@ -154,28 +145,9 @@ The incremental process is stopped once the length of the 3D curve $C_{i+1}$ exc
 \section{Results}
 
 To demonstrate our method we conducted an experiment consisting of flexible needles inserted into an abdomen phantom (CIRS model 57) and scanned using GE Discovery CT750HD scanner at GE Healthcare Haifa. The needles used were: a long 16 gauge (1.65mm outer diameter) needle, and short 22 gauge (0.72mm outer diameter) needle. For the long needle, the marker center was fixed at 235mm from the tip, and for the short needle at 135mm.
-The reconstructed image size is $ 800 \times 800 \times 144 $ voxels, with spatial resolution of $0.58 \times 0.58 \times 1.25mm^3$. The detector array consists of 885 elements scanned at 984 views at regular intervals in the range [0⁰, 360⁰], where four slices were acquired in each full revolution. The data was re-binned from fan-beam to parallel rays’ representation of the projections.
+The reconstructed image size is $ 800 \times 800 \times 144 $ voxels, with spatial resolution of $0.58 \times 0.58 \times 1.25mm^3$. The detector array consists of 885 elements scanned at 984 views at regular intervals in the range [0$^{\circ}$ , 360$^{\circ}$), where four slices were acquired in each full revolution. The data was re-binned from fan-beam to parallel rays representation of the projections.
 
 At first a scan of the empty scanner bed was performed so that its sinogram can be subtracted from the following scans. Then, a full (dense sampling of view angles) baseline scan of the phantom was acquired, without the needle present. At each subsequent scan, the needle with attached spherical marker was inserted at a different location or different depth, and a full scan was acquired again. Sparse scanning was simulated by allowing the algorithm to access only a small subset of view angles.
-
-\begin{figure}[b]
-\centering
-\includegraphics[width=8cm]{short_needle.jpg}
-\caption{Caption}
-\label{figurelabel}
-\end{figure}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=8cm]{long_needle_phantom.jpg}
-\caption{Caption}
-\label{figurelabel2}
-\end{figure}
-
-The full baseline scan was registered to each sparse scan with needle inserted, using Radon-space rigid registration. The registration accuracy was evaluated as the root-mean-square of differences between voxel coordinates transformed by the calculated registration and by image-space registration of the reconstructed images. 
-A sparse set of 24 evenly spaced view angles in the range $[0^\circ,180^\circ)$ was used for Radon-space registration and needle path reconstruction as previous experiments \cite{medan2017reduced} with a straight needle showed this selection offered a good trade-off between robustness and potential dose reduction.
-The marker center and needle tip ground truth was obtained via manual localization on the reconstructed images.
-Table \ref{results_table} summarizes the results of needle tip localization for the 7 scans in the dataset.
 
 \begin{table}[t]
 \caption{Summary of experimental results}
@@ -205,6 +177,31 @@ S3 & 1.5 & 0.9 & --\\
 \end{center}
 \end{table}
 
+\begin{figure}[b]
+\centering
+\includegraphics[width=8cm]{short_needle.jpg}
+\caption{Short flexible needle with spherical marker attached at 135mm from the tip.}
+\label{short_needle_fig}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=8cm]{long_needle_phantom.jpg}
+\caption{Long spherical needle inserted into abdomen phantom, on CT scanner bed}
+\label{long_needle_fig}
+\end{figure}
+
+\begin{figure}[b]
+\centering
+\includegraphics[width=8cm]{projection_diff_images.png}
+\caption{Projection difference images for two views from one scan of the short needle. the green crosses indicate ground truth center of marker and tip; red dots indicate the control points established in the incremental needle trajectory reconstruction.}
+\label{proj_diff_fig}
+\end{figure}
+
+The full baseline scan was registered to each sparse scan with needle inserted, using Radon-space rigid registration. The registration accuracy was evaluated as the root-mean-square of differences between voxel coordinates transformed by the calculated registration and by image-space registration of the reconstructed images. 
+A sparse set of 24 evenly spaced view angles in the range $[0^\circ,180^\circ)$ was used for Radon-space registration and needle path reconstruction as previous experiments \cite{medan2017reduced} with a straight needle showed this selection offered a good trade-off between robustness and potential dose reduction.
+The marker center ground truth was obtained via manual localization on the reconstructed images, and the path ground truth was traced in 3D image space by a similar method to the one described above for projection space - namely, incremental tracing of short segments to establish control points based on difference image, and bezier curve reconstruction in 3D. The tip ground truth was determined as the point on the needle trace found at the known tip-marker distance.
+Table \ref{results_table} summarizes the results of needle tip localization for the 7 scans in the dataset.
 
 \section{Discussion}
 Discussion leading to visual feedback.
@@ -215,12 +212,12 @@ Our method is suitable when
 
 Limitations are
  
-%\addtolength{\textheight}{-12cm}   % This command serves to balance the column lengths
-                                  % on the last page of the document manually. It shortens
-                                  % the textheight of the last page by a suitable amount.
-                                  % This command does not take effect until the next page
-                                  % so it should come on the page before the last. Make
-                                  % sure that you do not shorten the textheight too much.
+\begin{figure}[]
+\centering
+\includegraphics[width=7.5cm]{multislices.png}
+\caption{Axial and coronal multi-slice views (top and bottom of each sub-image, respectively) of the abdomen phantom with flexible needle (L - long, S - short) inserted in different positions. The multi-slice views are generated by assigning a color map to encode the depth of each slice in the direction perpendicular to the image plane.}
+\label{multislices_fig}
+\end{figure}
 
 \section{Conclusions}
 We have described a flexible needle extension of our method for needle and patient tracking in interventional CT procedures, based on fractional CT scanning without image reconstruction.
@@ -237,7 +234,15 @@ The main advantages of our method are:
 
 An accuracy level comparable to 3D image space methods is shown in our experimental results.
 The dose reduction enabled by our method allows either more frequent tip localizations during needle insertion for a similar total dose, or a reduced total dose for the same frequency of tip localization.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\addtolength{\textheight}{-12cm}   % This command serves to balance the column lengths
+                                  % on the last page of the document manually. It shortens
+                                  % the textheight of the last page by a suitable amount.
+                                  % This command does not take effect until the next page
+                                  % so it should come on the page before the last. Make
+                                  % sure that you do not shorten the textheight too much.
 
 \bibliographystyle{ieeetr}
 \bibliography{flexible_needle}
