@@ -27,9 +27,11 @@
 \usepackage{enumitem}
 \usepackage{float}
 \usepackage{lipsum}
+\usepackage{caption}
+\captionsetup[table]{position=bottom}
 
 \title{\LARGE \bf
-Reduced-dose flexible needle and patient tracking using fractional scanning in interventional CT procedures 
+Flexible needle and patient tracking using fractional scanning for reduced dose in interventional CT procedures
 }
 
 \author{Guy Medan$^{1}$ and Leo Joskowicz$^{1}$, Fellow, IEEE% <-this % stops a space
@@ -38,7 +40,6 @@ Reduced-dose flexible needle and patient tracking using fractional scanning in i
         {\tt\small gmedan/josko at cs.huji.ac.il}}%
 \thanks{Thanks Eyal, Ronen GE}%
 }
-
 
 \begin{document}
 
@@ -61,26 +62,21 @@ interventional CT, fractional CT scanning, reduced dose CT scanning, flexible ne
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
-\textit{Par. describing the motivation and the clinical use:}
 Image guided minimally invasive techniques have become commonplace for interventional procedures such as biopsies and aspirations.
-In these procedures a flexible needle is inserted under image guidance toward a target, either manually or using robotic actuators.
+In these procedures a flexible needle is inserted under image guidance toward a target, either manually or using robotic actuators. Repeated imaging is acquired during insertion in order to verify the needle is advancing in the desired direction, as errors in needle placement can lead to wrong diagnosis or failed treatment.
 
-\textit{Par. listing all the limitations and issues of interventional CT scanning (in-plane imaging, imaging artifacts, dose etc):}
 CT-guided procedures involve incremental advancement of the needle, while repeated imaging is performed to ensure that the needle is being inserted in the desired position and orientation toward the target.
 While providing high resolution volumetric imaging of the patient, CT-guided interventions also carry several limitations and drawbacks.
 The intervention protocol typically requires the needle to be aligned with the axial plane of imaging as it is being inserted \cite{gupta2014ct}, which requires careful positioning of the patient to allow access to the target.
 Additionally, the presence of the needle in the scanned volume introduces image artifacts, due to beam hardening and scatter \cite{boas2012ctartifacts}, which can obscure important anatomical structures near the needle tip.
 And finally, the patient's exposure to accumulating ionizing X-ray radiation may increase the risk of cancer \cite{mettler2000ct}, \cite{chodick2007excess}, which is exacerbated in interventional CT due to the number of repeat scans acquired during the procedure.
 
-\textit{Par. describing other imaging solutions and their drawbacks: fluoro, CBCT}
 Other imaging modalities used for interventional procedures include ultrasound, fluoroscopy and cone-beam CT.
 Ultrasound is a cost effective imaging solution, though it provides only 2D cross sections at limited resolution and SNR \cite{sheafor2000comparison}.
 Fluoroscopy offers improved spatial resolution, but is not suitable when complex anatomical relationships must be characterized in 3D during the intervention.
-Cone-beam CT.
-\cite{orth2008cbct} \cite{floridi2014cbct}
+Flat-panel cone-beam CT is a relatively new technology increasingly used in interventional radiology, although it suffers from longer scan times and increased radiation scatter, resulting in increased artifacts compared to multi-detector CT \cite{orth2008cbct}.
 
-\textit{Extend the discussion of low-dose CT scanning and repeat CT scanning then mention fractional repeat scanning as an option:}
-Dose reduction techniques for CT focus on achieving a good quality of reconstruction within the context of a single acquisition by scanning with lower tube current, resulting in lowered SNR which is overcome using statistical models in the reconstruction of the image \cite{zhang2016statistical}, \cite{kim2015sparseview}, \cite{niu2014sparse}, \cite{liu2014total}. 
+Dose reduction techniques for CT mainly focus on achieving a good quality of reconstruction within the context of a single acquisition by scanning with lower tube current, resulting in lowered SNR, which is overcome by denoising \cite{manduca2009projection} or using statistical noise models in the reconstruction of the image \cite{zhang2016statistical}, \cite{kim2015sparseview}, \cite{niu2014sparse}, \cite{liu2014total}. 
 
 However, in the common cases where a full baseline scan (without the needle) is available, a different approach can be used:
 selective acquisition of a sparse set of projection views, referred to as fractional scanning, enables reducing the radiation dose by modulating the source of x-rays during its rotation. By exploiting the projection space raw data, registration with the baseline scan and localization of the needle in the repeat scan can be achieved without reconstruction of the repeat scan image \cite{medan2017sparse}, \cite{medan2017reduced}.
@@ -99,10 +95,10 @@ In \cite{yaniv2010needle}, embedded electromagnetic fiducials are used for needl
 
 \section{Method}
 
-We describe next an extension to flexible needles of our previous method \cite{medan2017reduced} for volume image-less rigid needle and patient tracking in interventional CT procedures based on fractional CT scanning. Similarly to our previous method, we begin by computing a sinogram-space rigid registration of the patient position in the CT scanner coordinate frame between a baseline scan without a needle, and a repeat scan with a needle introduced. The repeat scan is performed by sampling sparsely in the view angle domain (fractional scanning) and without reconstructing the CT image, while the baseline scan is assumed to be a full scan (sampled densely in the view angle domain). We use projection difference images (shown in figure \ref{proj_diff_fig}), which are calculated by subtracting registered reprojected baseline scan images from the sparse set of repeat projection images. These highlight the differences between scans, which in our case is assumed to be the needle. The needle path is then traced in 3D space using only the projection difference images. The stages of our method are outlined below:
+We describe next an extension to flexible needles of our previous method \cite{medan2017reduced} for volume image-less rigid needle and patient tracking in interventional CT procedures based on fractional CT scanning. Similarly to our previous method, we begin by computing a sinogram-space rigid registration of the patient position in the CT scanner coordinate frame between a baseline scan without a needle, and a repeat scan with a needle introduced. The repeat scan is performed by sampling sparsely in the view angle domain (fractional scanning) and without reconstructing the CT image, while the baseline scan is assumed to be a full scan (sampled densely in the view angle domain). We use projection difference images (shown in fig. \ref{proj_diff_fig}), which are calculated by subtracting registered reprojected baseline scan images from the sparse set of repeat projection images. These highlight the differences between scans, which in our case is assumed to be the needle. The needle path is then traced in 3D space using only the projection difference images. The stages of our method are outlined below:
 \begin{enumerate}
 \item \textit{Fractional scanning}. A fractional repeat scan is obtained with the needle in place. The full baseline scan and fractional repeat scan are registered using our sinogram space rigid registration method \cite{medan2017sparse}.
-\item \textit{Projection difference}. Using the obtained rigid registration, the projection difference images are calculated by applying the rigid transformation to the baseline scan volume, forward projection, and subtraction.
+\item \textit{Projection difference}. Using the obtained rigid registration, the projection difference images are calculated by applying the rigid transformation to the baseline scan volume, forward projection, and subtraction. The images are then post-processed to enhance features that are locally similar to lines.
 \item \textit{Spherical marker localization}. we obtain a 3D localization of a spherical marker attached to the needle at a known distance from the tip, using the projection difference images.
 \item \textit{Incremental needle path tracing}. starting from the center of the marker obtained in the previous stage, we incrementally trace the needle path in 3D space using the projection difference images.
 \item \textit{Display/feedback}. the current location of the needle with respect to the baseline scan 3D image is displayed and/or used as feedback for further driving the needle toward the target.
@@ -121,10 +117,8 @@ Finally, the 3D position of the marker center $s$ is calculated by solving an in
 
 \subsection{Incremental path tracing} \label{inctracing}
 
-\textit{Provide in one paragraph the overview and then go into details.}
 The path of the needle in 3D space is estimated by incrementally establishing a series of equidistant bezier curve control points along the path of the needle in 3D space $p_1, p_2, ..., p_i$, starting from the marker center $p_1=s$, which are used to construct a 3D curve $C_i$ tracing the path of the needle from the center of the spherical marker toward the tip, where $i$ is the number of control points in the incremental process. 
 
-\textit{Divide it into steps and number each as you did in A}
 \begin{enumerate}
     \item Starting from the center of the spherical marker, the 3D initial direction of the first needle segment is determined in 3D space using its 2D projections onto the projection difference images, by optimizing a cost function which is designed to attain a minimum when the projection difference images contain line segment in the projected direction. 4 control points are placed at regular intervals along the initial segment.
     \item Starting from the end of the previous segment, the next segment direction is determined in 3D space in a similar manner, and one control point is placed at the new segment end.
@@ -132,63 +126,63 @@ The path of the needle in 3D space is estimated by incrementally establishing a 
     \item Once the length of the evaluated curve exceeds the known distance between the tip and the center of the spherical marker, the last segment is shortened accordingly, with the last point representing the tip localization.
 \end{enumerate}
 
-In each round a new point $p_{i+1}(\hat{n}) = p_i + \Gamma \hat{n}$ is sought, where $\Gamma$ is a fixed parameter for segment length, and $\hat{n}$ is a direction to be determined via optimization of a cost function detailed below.
+In each iteration a new point $p_{i+1}(\hat{n}) = p_i + \Gamma \hat{n}$ is sought, where $\Gamma$ is a fixed parameter for segment length, and $\hat{n}$ is a direction to be determined via optimization of a cost function detailed below.
 A 3D curve $C_{i+1}[\hat{n}]$ is obtained from the control points $p_1, p_2, ..., p_i, p_{i+1}(\hat{n})$, and projected onto each of the $K$ view angles projection difference images to obtain projected curves $P_j C_{i+1}[\hat{n}] = c_{i+1}^j[\hat{n}]$ where $j=1,...,K$ is the view angle index and $P_j$ is the projection operator for view $j$.
 The direction $\hat{n}$ is obtained by optimizing a cost function designed to attain a minimum when the projection of the curve $C_{i+1}$ onto the set of projection difference images follows the needle path traced in the images:
 \[ \Psi_i(\theta, \phi) = -\sum_{j=1}^K{\int_{r \in c_{i+1}^j[\hat{n}(\theta, \phi)]} {I_j(r)dl}} \]
 where $ \theta, \phi$ are spherical coordinates, $ \hat{n}(\theta, \phi) $ is the conversion from spherical coordinates to unit vector $ \hat{n} $, and $r$ is the 2D coordinate along the projected path $c_{i+1}^j[\hat{n}]$ in projection difference image $I_j$. 
-Accordingly, the orientation of the $i$-th segment is obtained as $(\theta_i^*, \phi_i^*) = \textsf{argmin}_{\theta, \phi} \Psi_i ( \theta, \phi)$. Then, a new control point $p_{i+1}$ is added to the series of established control points $p_1, p_2, ..., p_i, p_{i+1}$ using the relation:
+Accordingly, the orientation of the $i$-th segment is obtained as $(\theta_i^*, \phi_i^*) = \textsf{argmin}_{\theta, \phi} \Psi_i ( \theta, \phi)$. Then, a new control point $p_{i+1}$ is added to the series of established control points $p_1, p_2, ..., p_i$ using the relation:
 $$ p_{i+1} = p_i + \Gamma \hat{n}(\theta_i^*, \phi_i^*) $$
 
 The incremental process is stopped once the length of the 3D curve $C_{i+1}$ exceeds the known distance between the marker and needle tip. Then, the tip position is determined by trimming the last segment so that the overall length of the curve is equal to the known marker-tip distance.
 
 \section{Results}
 
-To demonstrate our method we conducted an experiment consisting of flexible needles inserted into an abdomen phantom (CIRS model 57) and scanned using GE Discovery CT750HD scanner at GE Healthcare Haifa. The needles used were: a long 16 gauge (1.65mm outer diameter) needle, and short 22 gauge (0.72mm outer diameter) needle. For the long needle, the marker center was fixed at 235mm from the tip, and for the short needle at 135mm.
-The reconstructed image size is $ 800 \times 800 \times 144 $ voxels, with spatial resolution of $0.58 \times 0.58 \times 1.25mm^3$. The detector array consists of 885 elements scanned at 984 views at regular intervals in the range [0$^{\circ}$ , 360$^{\circ}$), where four slices were acquired in each full revolution. The data was re-binned from fan-beam to parallel rays representation of the projections.
+To demonstrate our method we conducted an experiment consisting of flexible needles inserted into an abdomen phantom (CIRS model 57) and scanned using GE Discovery CT750HD scanner at GE Healthcare Haifa (see fig. \ref{long_needle_fig}). The needles used were: a long 16 gauge (1.65mm outer diameter) needle, and short 22 gauge (0.72mm outer diameter) needle. For the long needle, the marker center was fixed at 235mm from the tip, and for the short needle at 135mm (figures \ref{long_needle_fig} and \ref{short_needle_fig} respectively).
+The reconstructed image size is 800$\times$800$\times$144 voxels, with spatial resolution of 0.58$\times$0.58$\times$1.25 mm$^3$. The detector array consists of 885 elements scanned at 984 views at regular intervals in the range [0$^{\circ}$ , 360$^{\circ}$), where four slices were acquired in each full revolution. The data was re-binned from fan-beam to parallel rays representation of the projections.
 
 At first a scan of the empty scanner bed was performed so that its sinogram can be subtracted from the following scans. Then, a full (dense sampling of view angles) baseline scan of the phantom was acquired, without the needle present. At each subsequent scan, the needle with attached spherical marker was inserted at a different location or different depth, and a full scan was acquired again. Sparse scanning was simulated by allowing the algorithm to access only a small subset of view angles.
 
 \begin{table}[t]
-\caption{Summary of experimental results}
 \label{results_table}
 \begin{center}
-\begin{tabular}{|c||c|c|c|}
+\begin{tabular}{|c||c|c|c|c|}
 \hline
-Scan ID & Reg. error & Marker error & Tip error\\
-  & [mm] & [mm] & [mm]\\
+Scan & Reg. error & Marker & Tip error & Trajectory\\
+ID  & [mm] & error [mm] & [mm] & error  [mm]\\
 \hline
 \hline
-L1 & 1.4 & 1.9 & 2.6\\
+L1 & 1.4 & 1.9 & 2.6 & 0.7\\
 \hline
-L2 & 0.7 & 0.8 & 1.9\\
+L2 & 0.7 & 0.8 & 1.9 & 0.6\\
 \hline
-L3 & 0.6 & 0.3 & --\\
+L3 & 0.6 & 0.3 & 4.3 & 0.9 \\
 \hline
-L4 & 1.0 & 0.8 & 2.0\\
+L4 & 1.0 & 0.8 & 2.0 & 0.5\\
 \hline
-S1 & 1.4 & 1.1 & 2.4\\
+S1 & 1.4 & 1.1 & 2.4 & 0.5\\
 \hline
-S2 & 1.2 & 4.5 & --\\
+S2 & 1.2 & 1.5 & 1.4 & 0.6\\
 \hline
-S3 & 1.5 & 0.9 & --\\
+S3 & 1.5 & 0.9 & 2.2 & 0.9\\
 \hline
 \end{tabular}
+\caption{Summary of experimental results. L/S stands for long/short needle, respectively.}
 \end{center}
 \end{table}
 
 \begin{figure}[b]
 \centering
-\includegraphics[width=8cm]{short_needle.jpg}
-\caption{Short flexible needle with spherical marker attached at 135mm from the tip.}
-\label{short_needle_fig}
+\includegraphics[width=8cm]{long_needle_phantom.jpg}
+\caption{Long spherical needle inserted into abdomen phantom, on CT scanner bed}
+\label{long_needle_fig}
 \end{figure}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=8cm]{long_needle_phantom.jpg}
-\caption{Long spherical needle inserted into abdomen phantom, on CT scanner bed}
-\label{long_needle_fig}
+\includegraphics[width=8cm]{short_needle.jpg}
+\caption{Short flexible needle with spherical marker attached at 135mm from the tip.}
+\label{short_needle_fig}
 \end{figure}
 
 \begin{figure}[b]
@@ -199,25 +193,30 @@ S3 & 1.5 & 0.9 & --\\
 \end{figure}
 
 The full baseline scan was registered to each sparse scan with needle inserted, using Radon-space rigid registration. The registration accuracy was evaluated as the root-mean-square of differences between voxel coordinates transformed by the calculated registration and by image-space registration of the reconstructed images. 
-A sparse set of 24 evenly spaced view angles in the range $[0^\circ,180^\circ)$ was used for Radon-space registration and needle path reconstruction as previous experiments \cite{medan2017reduced} with a straight needle showed this selection offered a good trade-off between robustness and potential dose reduction.
-The marker center ground truth was obtained via manual localization on the reconstructed images, and the path ground truth was traced in 3D image space by a similar method to the one described above for projection space - namely, incremental tracing of short segments to establish control points based on difference image, and bezier curve reconstruction in 3D. The tip ground truth was determined as the point on the needle trace found at the known tip-marker distance.
-Table \ref{results_table} summarizes the results of needle tip localization for the 7 scans in the dataset.
+A sparse set of 24 evenly spaced view angles in the range [0$^\circ$,180$^\circ$) was used for Radon-space registration and needle path reconstruction as previous experiments \cite{medan2017reduced} with a straight needle showed this selection offered a good trade-off between robustness and potential dose reduction.
+The marker center ground truth was obtained via manual localization on the reconstructed images, and the path ground truth was traced in 3D image space by a similar method to the one described above for projection space - namely, incremental tracing of short segments to establish control points based on difference image, and bezier curve reconstruction in 3D. The tip ground truth was determined as the point on the needle trace found at the known tip-marker distance. The trajectory error was evaluated as the root-mean-squared distance of points along the reconstructed curve to the nearest point on the ground-truth curve.
+
+Table \ref{results_table} summarizes the results of needle tip localization for the 7 scans in the dataset. One of the scans (L3) shows a large tip localization error due to the needle trajectory being very close to in-plane with the axial plane (see fig. \ref{multislices_fig}). In our method, long needle segments that are in-plane lead to inaccurate estimation of the trajectory since the projections of such segments are observed as horizontal lines in the projection difference images regardless of the orientation withing the plane. This imposes a limitation encountered previously in our work on straight needles \cite{medan2017reduced}, where in-plane insertion of the needle should be avoided to enable the recovery of the needle orientation as an intersection of non-parallel planes.
+
+Running times of 200-250 seconds were observed on Intel i7 CPU running unoptimized Matlab code. To allow our method to be used in a clinical setting, parallelization of computations on GPU will be required in order to bring the running time down to several seconds. In the projection difference calculation stage, the projection difference images can be calculated in parallel. Additionally, in each round of control point addition, the operations on each projection difference image can be parallelized to further reduce the running time.
 
 \section{Discussion}
-Discussion leading to visual feedback.
+Our method extends the novelty of imageless projection-space localization from rigid to flexible needles, allowing the potential of dose reduction in a larger range of interventional CT procedures. The localization can be displayed as visual feedback to the radiologist on the baseline scan, which is free from artifacts due to the needle, allowing an unobstructed view of the target tissue.
 
-Visual feedback is particularly important for robotically driven needles, where the interaction of the needle and tissue is modeled in order to construct a control sequence realizing a planned insertion path. Such systems would benefit from mid-insertion feedback that would allow adjustments to the control sequence based on the achieved state of the needle insertion, and a reduction in x-ray dose will benefit the patient who will be subjected to a smaller radiation-related risk.
-
-Our method is suitable when
-
-Limitations are
- 
 \begin{figure}[]
 \centering
-\includegraphics[width=7.5cm]{multislices.png}
+\includegraphics[width=7cm]{multislices.png}
 \caption{Axial and coronal multi-slice views (top and bottom of each sub-image, respectively) of the abdomen phantom with flexible needle (L - long, S - short) inserted in different positions. The multi-slice views are generated by assigning a color map to encode the depth of each slice in the direction perpendicular to the image plane.}
 \label{multislices_fig}
 \end{figure}
+
+Visual feedback is particularly important for robotically driven needles, where the interaction of the needle and tissue is modeled in order to construct a control sequence realizing a planned insertion path. Such systems would benefit from mid-insertion feedback that would allow adjustments to the control sequence based on the achieved state of the needle insertion, and a reduction in x-ray dose will benefit the patient who will be subjected to a smaller radiation-related risk.
+
+
+Our method is suitable when the baseline and repeat scans have minimal deformations and rigid registration can be used to align them. The scan field of view needs to includes the flexible needle and the spherical marker, while keeping the insertion out-of-plane.
+
+The study itself is limited to several scans of an abdomen phantom, with the fractional scanning simulated from full scans by omitting most of the repeat scan data used as input for the algorithm. To implement our method on a commercial CT scanner, fractional scanning would have to be achieved by one of two possible approaches: fast modulation of the x-ray tube current and/or voltage, or fast mechanical collimation during acquisition. Such methods would require hardware integration beyond the scope of this work, but since the fraction of views required in the repeat scan is below 5\%, there is potential for substantial dose reduction.
+
 
 \section{Conclusions}
 We have described a flexible needle extension of our method for needle and patient tracking in interventional CT procedures, based on fractional CT scanning without image reconstruction.
@@ -229,8 +228,7 @@ The main advantages of our method are:
 3) simultaneous patient registration and needle localization for every snapshot; 
 4) fully automatic, no calibration and/or manual setup;
 5) only a simple marker attached to the needle is required; 
-6) artifact-free monitoring of a flexible needle's trajectory on top of a baseline scan;
-7) supports closed-loop robotic flexible needle insertion.
+6) artifact-free monitoring of a flexible needle's trajectory on top of a baseline scan.
 
 An accuracy level comparable to 3D image space methods is shown in our experimental results.
 The dose reduction enabled by our method allows either more frequent tip localizations during needle insertion for a similar total dose, or a reduced total dose for the same frequency of tip localization.
